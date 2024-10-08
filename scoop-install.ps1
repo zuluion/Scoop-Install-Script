@@ -22,8 +22,10 @@ if (-not $installPath) {
 try {
     $env:SCOOP = $installPath
     [Environment]::SetEnvironmentVariable('SCOOP', $env:SCOOP, 'User')
+    Write-Host ""
     Write-Host "The installation path has been set to: $installPath"
 } catch {
+    Write-Host ""
     Write-Error "Failed to set environment variable: $_"
     exit 1
 }
@@ -35,7 +37,9 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope Process
 $defaultInstallProxy = "http://127.0.0.1:7890"
 
 # Prompt user for proxy settings
+Write-Host ""
 $proxy = Read-Host -Prompt "Please enter your proxy settings or press Enter to use the default install settings $defaultInstallProxy"
+Write-Host ""
 
 # Use default proxy if no input
 if (-not $proxy) {
@@ -58,6 +62,7 @@ function Install-Scoop {
         } catch {
             $retryCount++
             Write-Warning "Attempt to install Scoop failed. Retry $retryCount/$maxRetries ..."
+            Write-Host ""
             Start-Sleep -Seconds 5
         }
     }
@@ -74,6 +79,7 @@ Install-Scoop -proxy $proxy
 $defaultScoopProxy = "127.0.0.1:7890"
 
 # Prompt user for proxy settings
+Write-Host ""
 $proxy = Read-Host -Prompt "Please enter your proxy settings or press Enter to use the default scoop settings $defaultScoopProxy"
 
 # Use default proxy if no input
@@ -83,7 +89,9 @@ if (-not $proxy) {
 
 # Configure Scoop proxy
 scoop config proxy $proxy
+Write-Host ""
 Write-Host "The proxy is set to: $proxy"
+Write-Host ""
 
 # Install Git
 scoop install git
@@ -104,17 +112,21 @@ foreach ($bucket in $scoopBuckets) {
     if ($bucket -is [string]) {
         # Add default buckets
         try {
+            Write-Host ""
             scoop bucket add $bucket
             Write-Host "Successfully added bucket: $bucket"
         } catch {
+            Write-Host ""
             Write-Warning "Failed to add bucket: $bucket. Error: $_"
         }
     } elseif ($bucket -is [hashtable]) {
         # Add buckets with URLs
         try {
+            Write-Host ""
             scoop bucket add $bucket.Name $bucket.URL
             Write-Host "Successfully added bucket: $($bucket.Name)"
         } catch {
+            Write-Host ""
             Write-Warning "Failed to add bucket: $($bucket.Name). Error: $_"
         }
     }
@@ -122,28 +134,36 @@ foreach ($bucket in $scoopBuckets) {
 
 
 # Display added buckets
+Write-Host ""
 Write-Host "Added bucket list:"
 scoop bucket list
 
+Write-Host ""
 Write-Host "To delete unwanted buckets, use the following command:"
 Write-Host "scoop bucket remove [bucket_name]"
+Write-Host ""
 
 # Install optimized search tool
 scoop install scoop-search
 
+Write-Host ""
+
 # Clear Scoop cache
 scoop cache rm *
 
+Write-Host ""
 Write-Host "Scoop installation is complete!"
 Write-Host "Next, you can install applications using the following command:"
 Write-Host "scoop install [app_name]"
 Write-Host "Replace [app_name] with the name of the application you want to install."
 
+Write-Host ""
 Write-Host "To list all available applications, use the following command:"
 Write-Host "scoop search [app_name]"
 Write-Host "Optimized search tools are also available, e.g., scoop-search [app_name]."
 Write-Host "For more help, visit https://scoop.sh/ or https://github.com/lukesampson/scoop/wiki for more information."
 
 # Wait for user to press Enter before closing
+Write-Host ""
 Write-Host "Press the Enter key to close the window."
 Read-Host
